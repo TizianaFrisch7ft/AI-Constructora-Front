@@ -8,14 +8,19 @@ import Link from "next/link"
 import ProjectsSidebar from "@/components/projects-sidebar"
 import ResultMessage from "@/components/ResultMessage"
 
-
 interface Message {
-  id: string
-  content: string | React.ReactNode
-  sender: "user" | "bot"
-  timestamp: Date
-  type?: "text" | "suggestion"
+  id: string;
+  content:
+    | string
+    | {
+        answer: string;
+        table: { headers: string[]; rows: string[][] } | null;
+        entities: { type: string; value: string }[];
+      };
+  sender: "user" | "bot";
+  timestamp: Date;
 }
+
 
 export default function TransactionalAgentPage() {
   const [messages, setMessages] = useState<Message[]>([
@@ -57,14 +62,15 @@ export default function TransactionalAgentPage() {
     try {
   // Conectar al endpoint /write del backend
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"}/write`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"}/api/ask/smart-write`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        instruction: currentInput,
-        confirm: true,
-      }),
+     body: JSON.stringify({
+  question: currentInput,
+  confirm: true,
+}),
+
     }
   );
 
@@ -73,17 +79,21 @@ export default function TransactionalAgentPage() {
   }
 
 
-      const data = await response.json()
+   const { answer, entities, table } = await response.json();
 
-    const botResponse: Message = {
-  id: (Date.now() + 1).toString(),
-  content: data?.result ? <ResultMessage result={data.result} /> : (data?.info || "Lo siento, no se pudo realizar la operación."),
+// envuelvo todo en un sólo objeto
+const botResponse: Message = {
+  id: (Date.now()+1).toString(),
+  content: {
+    answer,
+    table,
+    entities
+  },
   sender: "bot",
   timestamp: new Date(),
-}
+};
 
-
-      setMessages((prev) => [...prev, botResponse])
+setMessages(prev => [...prev, botResponse]);
     } catch (error) {
       console.error("Error connecting to backend:", error)
 
@@ -210,7 +220,15 @@ export default function TransactionalAgentPage() {
                             : "bg-gradient-to-r from-white to-blue-50/50 text-gray-900 border border-blue-200/30"
                         }`}
                       >
-                        <p className="text-sm sm:text-base leading-relaxed">{message.content}</p>
+                       {message.sender === "bot" && typeof message.content !== "string" ? (
+  // Cuando content es el objeto, delego en ResultMessage
+  <ResultMessage result={message.content} />
+) : (
+  // Si es string, lo muestro en párrafo
+  <p className="text-sm sm:text-base leading-relaxed">
+    {message.content as string}
+  </p>
+)}
                         <p
                           className={`text-xs mt-1 sm:mt-2 ${message.sender === "user" ? "text-gray-200" : "text-gray-500"}`}
                         >
