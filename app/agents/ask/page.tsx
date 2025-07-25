@@ -12,28 +12,34 @@ import AgentResultMessage from "@/components/AgentResultMessage"
 import TypingIndicator from "@/components/TypingIndicator"
 
 
-// en AskAgentPage.tsx (o donde declares tu interfaz)
+
+
 interface Entity {
   type: string
-  name?: string
+  id?: string
+  name: string
   rut?: string
-  value?: string
   surname?: string
+  email?: string
 }
 
+interface Recipient {
+  name: string
+  email: string
+}
 
 interface BotContent {
   answer: string
   entities: Entity[]
-  // si quieres tablas:
-  table?: { headers: string[]; rows: string[][] }
+  offerReminder?: boolean
+  reminderRecipients?: Recipient[]
+  rfqId?: string
 }
 
 interface Message {
   id: string
   sender: "user" | "bot"
   timestamp: Date
-  // ahora puede ser texto plano _o_ el objeto con answer+entities
   content: string | BotContent
 }
 
@@ -92,26 +98,29 @@ export default function AskAgentPage() {
       body: JSON.stringify({ question: currentInput }),
     })
     if (!res.ok) throw new Error(res.statusText)
-    // en tu handleSendMessage, tras deserializar la respuesta JSON:
-const { answer, entities } = await res.json()
+    // Incluye rfqId en la respuesta
+    const { answer, entities, offerReminder, reminderRecipients, rfqId } = await res.json()
 
-const botMessage: Message = {
-  id: Date.now().toString(),
-  sender: "bot",
-  timestamp: new Date(),
-  content: {
-    answer,
-    entities: entities.map((e: any) => ({
-      type: e.type,
-      name: e.name ?? e.value,
-      rut: e.rut,
-      value: e.value,
-      surname: e.surname,
-    })),
-  },
-}
+    const botMessage: Message = {
+      id: Date.now().toString(),
+      sender: "bot",
+      timestamp: new Date(),
+      content: {
+        answer,
+        entities: entities.map((e: any) => ({
+          type: e.type,
+          name: e.name,
+          rut: e.rut,
+          surname: e.surname,
+          email: e.email,
+        })),
+        offerReminder,
+        reminderRecipients,
+        rfqId, // ← aquí
+      },
+    }
 
-setMessages(prev => [...prev, botMessage])
+    setMessages(prev => [...prev, botMessage])
 
   } catch (e) {
     // fallback…
