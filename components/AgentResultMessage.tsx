@@ -7,6 +7,7 @@ interface Entity {
   value?: string
   name?: string
   rut?: string
+  surname?: string // Para PMs: apellido
 }
 
 interface BotContent {
@@ -68,6 +69,8 @@ export default function AgentResultMessage({ result }: { result: BotContent }) {
               <span className="text-[10px] text-gray-600">RUT: {entity.rut}</span>
             )}
           </span>
+        ) : entity.type === "PM" && entity.name && entity.surname ? (
+          `${entity.type}: ${entity.name} ${entity.surname}`
         ) : entity.name ? (
           `${entity.type}: ${entity.name}`
         ) : entity.value ? (

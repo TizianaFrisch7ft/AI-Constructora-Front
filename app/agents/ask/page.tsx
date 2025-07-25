@@ -18,6 +18,7 @@ interface Entity {
   name?: string
   rut?: string
   value?: string
+  surname?: string
 }
 
 
@@ -100,13 +101,13 @@ const botMessage: Message = {
   timestamp: new Date(),
   content: {
     answer,
-  entities: entities.map((e: any) => ({
-  type: e.type,
-  name: e.name ?? e.value,
-  rut: e.rut,
-  value: e.value,
-})),
-
+    entities: entities.map((e: any) => ({
+      type: e.type,
+      name: e.name ?? e.value,
+      rut: e.rut,
+      value: e.value,
+      surname: e.surname,
+    })),
   },
 }
 
