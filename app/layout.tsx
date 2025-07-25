@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: 'v0 App',
   description: 'Created with v0',
   generator: 'v0.dev',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export default function RootLayout({
@@ -17,6 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <style>{`
 html {
   font-family: ${GeistSans.style.fontFamily};

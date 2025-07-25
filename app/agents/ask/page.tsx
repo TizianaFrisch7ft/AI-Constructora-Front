@@ -15,8 +15,11 @@ import TypingIndicator from "@/components/TypingIndicator"
 // en AskAgentPage.tsx (o donde declares tu interfaz)
 interface Entity {
   type: string
-  value: string
+  name?: string
+  rut?: string
+  value?: string
 }
+
 
 interface BotContent {
   answer: string
@@ -97,10 +100,13 @@ const botMessage: Message = {
   timestamp: new Date(),
   content: {
     answer,
-    entities: entities.map((e: any) => ({
-      type: e.type,
-      value: e.name, // 👈 importante: convertir "name" a "value" para tu frontend
-    })),
+  entities: entities.map((e: any) => ({
+  type: e.type,
+  name: e.name ?? e.value,
+  rut: e.rut,
+  value: e.value,
+})),
+
   },
 }
 
