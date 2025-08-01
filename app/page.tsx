@@ -21,6 +21,7 @@ import {
   Plus,
   BarChart,
   Building2,
+  Calendar, // <-- Agregado
 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -229,6 +230,24 @@ export default function ProcurementDashboard() {
                   <Button variant="ghost" className="w-full justify-start hover:bg-white/50">
                     <FileText className="w-4 h-4 mr-3" />
                     Cotizaciones
+                  </Button>
+                </Link>
+                <Link href="/quotes">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-white/50">
+                    <FileText className="w-4 h-4 mr-3" />
+                    Cotizaciones Completas
+                  </Button>
+                </Link>
+                <Link href="/cronogramas">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-white/50">
+                    <Calendar className="w-4 h-4 mr-3" />
+                    Cron. de Compras (Req)
+                  </Button>
+                </Link>
+                <Link href="/masterpur">
+                  <Button variant="ghost" className="w-full justify-start hover:bg-white/50">
+                    <BarChart className="w-4 h-4 mr-3" />
+                    MasterPur
                   </Button>
                 </Link>
                 <Link href="/analisis">
